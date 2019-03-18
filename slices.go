@@ -1,4 +1,4 @@
-package go_slices
+package go_rnd_common
 
 func StringInSlice(str string, list []string) bool {
 	for _, v := range list {
