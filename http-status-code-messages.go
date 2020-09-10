@@ -123,7 +123,7 @@ func NewRND(r RND) (*RND, error) {
 
 func (r *RND) getGenericErr(languageID int) string {
 	errorName := ""
-	query := `SELECT error_name FROM error_messages WHERE error_key = ? AND language_id = ?`
+	query := `SELECT error_message FROM error_messages WHERE error_key = ? AND language_id = ?`
 
 	if languageID == 0 {
 		languageID = r.DefaultLanguageID
@@ -135,7 +135,7 @@ func (r *RND) getGenericErr(languageID int) string {
 
 func (r *RND) getErrorName(err error, languageID int) (string, error) {
 	errorName := ""
-	query := `SELECT error_name FROM error_messages WHERE error_key = ? AND language_id = ?`
+	query := `SELECT error_message FROM error_messages WHERE error_key = ? AND language_id = ?`
 
 	if languageID == 0 {
 		languageID = r.DefaultLanguageID
