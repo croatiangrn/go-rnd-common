@@ -77,3 +77,19 @@ func getColumnNameForDbErr(title string) string {
 
 	return errToReturn
 }
+
+type HttpErrorWithErrorSlug struct {
+	Error      string `json:"error"`
+	ErrorSlug  string `json:"error_slug"`
+	StatusCode int    `json:"status_code"`
+}
+
+func ThrowAnErrorWithErrorSlug(errName string, errSlug string, statusCode int, ctx *gin.Context) {
+	e := HttpErrorWithErrorSlug{
+		Error:      errName,
+		ErrorSlug:  errSlug,
+		StatusCode: statusCode,
+	}
+
+	ctx.AbortWithStatusJSON(statusCode, e)
+}
