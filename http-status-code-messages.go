@@ -4,10 +4,18 @@ import (
 	"errors"
 	"github.com/croatiangrn/scill_errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strings"
 )
 
+var (
+	ErrGenericErr      = errors.New("generic_err")
+	ErrDBEmpty         = errors.New("db_empty")
+	ErrLanguageIDEmpty = errors.New("default_language_id_empty")
+)
+
+// Deprecated: Use RND.ThrowStatusOK instead
 func ThrowStatusOk(i interface{}, c *gin.Context) {
 	if i != nil {
 		c.JSON(http.StatusOK, i)
@@ -25,6 +33,7 @@ type HttpError struct {
 	StatusCode int    `json:"status"`
 }
 
+// Deprecated: Use RND.HttpErrorWithSlug instead
 func ThrowStatusBadRequest(msg string, c *gin.Context) {
 	err := HttpError{
 		Error:      msg,
@@ -34,6 +43,7 @@ func ThrowStatusBadRequest(msg string, c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusBadRequest, err)
 }
 
+// Deprecated: Use RND.HttpErrorWithSlug instead
 func ThrowStatusInternalServerError(msg string, c *gin.Context) {
 	err := HttpError{
 		Error:      msg,
@@ -51,6 +61,7 @@ func ThrowUniqueViolationErr(err string, c *gin.Context) {
 	})
 }
 
+// Deprecated: Use RND.ThrowStatusUnauthorized instead
 func ThrowStatusUnauthorized(errMsg string, c *gin.Context) {
 	err := HttpError{
 		Error:      errMsg,
@@ -58,10 +69,6 @@ func ThrowStatusUnauthorized(errMsg string, c *gin.Context) {
 	}
 
 	c.AbortWithStatusJSON(http.StatusUnauthorized, err)
-}
-
-func RecordNotFound(err error) bool {
-	return err.Error() == "record not found"
 }
 
 var beautifiedErrorKeys = map[string]string{
@@ -86,16 +93,103 @@ type HttpErrorWithErrorSlug struct {
 	StatusCode int    `json:"status_code"`
 }
 
-func ThrowAnErrorWithErrorSlug(errName string, errSlug error, statusCode int, ctx *gin.Context) {
-	if errors.Is(errSlug, scill_errors.GenericErr) {
-		statusCode = http.StatusInternalServerError
+type RND struct {
+	DB *gorm.DB
+
+	// Fallback languageID
+	DefaultLanguageID int
+
+	// Fallback language locale
+	DefaultLanguageShortcode string
+}
+
+func NewRND(r RND) (*RND, error) {
+	if r.DB == nil {
+		return nil, scill_errors.EmptyDBPointer
+	}
+
+	if r.DefaultLanguageID == 0 {
+		return nil, scill_errors.EmptyLanguageID
+	}
+
+	if len(r.DefaultLanguageShortcode) == 0 {
+		r.DefaultLanguageShortcode = "en"
+	} else {
+		r.DefaultLanguageShortcode = strings.ToLower(r.DefaultLanguageShortcode)
+	}
+
+	return &r, nil
+}
+
+func (r *RND) getGenericErr(languageID int) string {
+	errorName := ""
+	query := `SELECT error_name FROM error_messages WHERE error_key = ? AND language_id = ?`
+
+	if languageID == 0 {
+		languageID = r.DefaultLanguageID
+	}
+
+	r.DB.Debug().Raw(query, scill_errors.GenericErr, languageID).Row().Scan(&errorName)
+	return errorName
+}
+
+func (r *RND) getErrorName(err error, languageID int) (string, error) {
+	errorName := ""
+	query := `SELECT error_name FROM error_messages WHERE error_key = ? AND language_id = ?`
+
+	if languageID == 0 {
+		languageID = r.DefaultLanguageID
+	}
+
+	if err := r.DB.Debug().Raw(query, err.Error(), languageID).Row().Scan(&errorName); err != nil {
+		return "", scill_errors.GenericErr
+	}
+
+	return errorName, nil
+}
+
+func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
+	errName, gotError := r.getErrorName(err, languageID)
+	statusCode := http.StatusBadRequest
+
+	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
+		errName = r.getGenericErr(languageID)
+		err = scill_errors.GenericErr
 	}
 
 	e := HttpErrorWithErrorSlug{
 		Error:      errName,
-		ErrorSlug:  errSlug.Error(),
+		ErrorSlug:  err.Error(),
 		StatusCode: statusCode,
 	}
 
 	ctx.AbortWithStatusJSON(statusCode, e)
+}
+
+func (r *RND) ThrowStatusUnauthorized(err error, languageID int, c *gin.Context) {
+	errName, gotError := r.getErrorName(err, languageID)
+	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
+		errName = r.getGenericErr(languageID)
+		err = scill_errors.GenericErr
+	}
+
+	e := HttpErrorWithErrorSlug{
+		Error:      errName,
+		ErrorSlug:  err.Error(),
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	c.AbortWithStatusJSON(http.StatusUnauthorized, e)
+}
+
+func (r *RND) ThrowStatusOK(i interface{}, c *gin.Context) {
+	if i != nil {
+		c.JSON(http.StatusOK, i)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "OK",
+	})
 }
