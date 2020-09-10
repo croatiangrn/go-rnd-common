@@ -86,8 +86,7 @@ type HttpErrorWithErrorSlug struct {
 	StatusCode int    `json:"status_code"`
 }
 
-func ThrowAnErrorWithErrorSlug(errName string, errSlug error, ctx *gin.Context) {
-	statusCode := http.StatusBadRequest
+func ThrowAnErrorWithErrorSlug(errName string, errSlug error, statusCode int, ctx *gin.Context) {
 	if errors.Is(errSlug, scill_errors.GenericErr) {
 		statusCode = http.StatusInternalServerError
 	}
