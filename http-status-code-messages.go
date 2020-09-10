@@ -129,7 +129,7 @@ func (r *RND) getGenericErr(languageID int) string {
 		languageID = r.DefaultLanguageID
 	}
 
-	r.DB.Debug().Raw(query, scill_errors.GenericErr, languageID).Row().Scan(&errorName)
+	r.DB.Debug().Raw(query, scill_errors.GenericErr.Error(), languageID).Row().Scan(&errorName)
 	return errorName
 }
 
