@@ -1,6 +1,8 @@
 package go_rnd_common
 
 import (
+	"errors"
+	"github.com/croatiangrn/scill_errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -84,10 +86,15 @@ type HttpErrorWithErrorSlug struct {
 	StatusCode int    `json:"status_code"`
 }
 
-func ThrowAnErrorWithErrorSlug(errName string, errSlug string, statusCode int, ctx *gin.Context) {
+func ThrowAnErrorWithErrorSlug(errName string, errSlug error, ctx *gin.Context) {
+	statusCode := http.StatusBadRequest
+	if errors.Is(errSlug, scill_errors.GenericErr) {
+		statusCode = http.StatusInternalServerError
+	}
+
 	e := HttpErrorWithErrorSlug{
 		Error:      errName,
-		ErrorSlug:  errSlug,
+		ErrorSlug:  errSlug.Error(),
 		StatusCode: statusCode,
 	}
 
