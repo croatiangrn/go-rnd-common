@@ -183,6 +183,18 @@ func (r *RND) ThrowStatusUnauthorized(err error, languageID int, c *gin.Context)
 	c.AbortWithStatusJSON(http.StatusUnauthorized, e)
 }
 
+func (r *RND) ThrowStatusCreated(i interface{}, c *gin.Context) {
+	if i != nil {
+		c.JSON(http.StatusCreated, i)
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"status":  http.StatusCreated,
+		"message": "OK",
+	})
+}
+
 func (r *RND) ThrowStatusOK(i interface{}, c *gin.Context) {
 	if i != nil {
 		c.JSON(http.StatusOK, i)
