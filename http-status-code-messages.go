@@ -165,7 +165,6 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 		ErrorSlug:  err.Error(),
 		StatusCode: statusCode,
 	}
-
 	ctx.AbortWithStatusJSON(statusCode, e)
 }
 
