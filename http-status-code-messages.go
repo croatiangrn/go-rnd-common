@@ -156,7 +156,7 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 		errName = r.getGenericErr(languageID)
 		err = scill_errors.GenericErr
 		statusCode = http.StatusInternalServerError
-	} else if errors.Is(gotError, scill_errors.RecordNotFound){
+	} else if errors.Is(err, scill_errors.RecordNotFound){
 		statusCode = http.StatusNotFound
 	}
 
