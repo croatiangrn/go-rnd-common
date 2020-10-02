@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/croatiangrn/scill_errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strings"
 )
