@@ -161,7 +161,7 @@ func (r *RND) getErrorfName(err error, languageID int, values ...interface{}) (s
 		return "", scill_errors.GenericErr
 	}
 
-	return fmt.Sprintf(errorName, values), nil
+	return fmt.Sprintf(errorName, values...), nil
 }
 
 func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
