@@ -2,6 +2,7 @@ package go_rnd_common
 
 import (
 	"errors"
+	"fmt"
 	"github.com/croatiangrn/scill_errors"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -148,6 +149,21 @@ func (r *RND) getErrorName(err error, languageID int) (string, error) {
 	return errorName, nil
 }
 
+func (r *RND) getErrorfName(err error, languageID int, values ...interface{}) (string, error) {
+	errorName := ""
+	query := `SELECT error_message FROM error_messages WHERE error_key = ? AND language_id = ?`
+
+	if languageID == 0 {
+		languageID = r.DefaultLanguageID
+	}
+
+	if err := r.DB.Debug().Raw(query, err.Error(), languageID).Row().Scan(&errorName); err != nil {
+		return "", scill_errors.GenericErr
+	}
+
+	return fmt.Sprintf(errorName, values), nil
+}
+
 func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 	errName, gotError := r.getErrorName(err, languageID)
 	statusCode := http.StatusBadRequest
@@ -165,6 +181,27 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 		ErrorSlug:  err.Error(),
 		StatusCode: statusCode,
 	}
+	ctx.AbortWithStatusJSON(statusCode, e)
+}
+
+func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, values ...interface{}) {
+	errName, gotError := r.getErrorfName(err, languageID, values)
+	statusCode := http.StatusBadRequest
+
+	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
+		errName = r.getGenericErr(languageID)
+		err = scill_errors.GenericErr
+		statusCode = http.StatusInternalServerError
+	} else if errors.Is(err, scill_errors.RecordNotFound){
+		statusCode = http.StatusNotFound
+	}
+
+	e := HttpErrorWithErrorSlug{
+		Error:      errName,
+		ErrorSlug:  err.Error(),
+		StatusCode: statusCode,
+	}
+
 	ctx.AbortWithStatusJSON(statusCode, e)
 }
 
