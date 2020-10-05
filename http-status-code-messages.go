@@ -185,7 +185,7 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 }
 
 func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, values ...interface{}) {
-	errName, gotError := r.getErrorfName(err, languageID, values)
+	errName, gotError := r.getErrorfName(err, languageID, values...)
 	statusCode := http.StatusBadRequest
 
 	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
