@@ -282,6 +282,8 @@ func (s *SCILLServiceResponse) HttpErrorWithSlug(r *RND, err error, languageID i
 		statusCode = http.StatusNotFound
 	} else if errors.Is(err, scill_errors.GenericErr) {
 		statusCode = http.StatusInternalServerError
+	} else if errors.Is(err, scill_errors.Unauthorized) {
+		statusCode = http.StatusUnauthorized
 	}
 
 	s.formatError(errName, err.Error(), statusCode)
