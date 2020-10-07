@@ -172,7 +172,7 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 		errName = r.getGenericErr(languageID)
 		err = scill_errors.GenericErr
 		statusCode = http.StatusInternalServerError
-	} else if errors.Is(err, scill_errors.RecordNotFound){
+	} else if errors.Is(err, scill_errors.RecordNotFound) {
 		statusCode = http.StatusNotFound
 	} else if errors.Is(err, scill_errors.GenericErr) {
 		statusCode = http.StatusInternalServerError
@@ -194,7 +194,7 @@ func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, va
 		errName = r.getGenericErr(languageID)
 		err = scill_errors.GenericErr
 		statusCode = http.StatusInternalServerError
-	} else if errors.Is(err, scill_errors.RecordNotFound){
+	} else if errors.Is(err, scill_errors.RecordNotFound) {
 		statusCode = http.StatusNotFound
 	}
 
@@ -245,4 +245,63 @@ func (r *RND) ThrowStatusOK(i interface{}, c *gin.Context) {
 		"status":  http.StatusOK,
 		"message": "OK",
 	})
+}
+
+type SCILLServiceResponse struct {
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message,omitempty"`
+	Error      string `json:"error,omitempty"`
+	ErrorSlug  string `json:"error_slug,omitempty"`
+}
+
+func (s *SCILLServiceResponse) formatOK(message string) {
+	s.StatusCode = http.StatusOK
+	s.Message = message
+}
+
+func (s *SCILLServiceResponse) formatError(error, errorSlug string, statusCode int) {
+	s.Error = error
+	s.ErrorSlug = errorSlug
+	s.StatusCode = statusCode
+}
+
+func (s *SCILLServiceResponse) ThrowStatusOK(message string, c *gin.Context) {
+	s.formatOK(message)
+	c.JSON(s.StatusCode, s)
+}
+
+func (s *SCILLServiceResponse) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
+	r := RND{}
+	errName, gotError := r.GetErrorName(err, languageID)
+	statusCode := http.StatusBadRequest
+
+	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
+		errName = r.getGenericErr(languageID)
+		err = scill_errors.GenericErr
+		statusCode = http.StatusInternalServerError
+	} else if errors.Is(err, scill_errors.RecordNotFound) {
+		statusCode = http.StatusNotFound
+	} else if errors.Is(err, scill_errors.GenericErr) {
+		statusCode = http.StatusInternalServerError
+	}
+
+	s.formatError(errName, err.Error(), statusCode)
+	ctx.AbortWithStatusJSON(statusCode, s)
+}
+
+func (s *SCILLServiceResponse) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, values ...interface{}) {
+	r := RND{}
+	errName, gotError := r.GetErrorfName(err, languageID, values...)
+	statusCode := http.StatusBadRequest
+
+	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
+		errName = r.getGenericErr(languageID)
+		err = scill_errors.GenericErr
+		statusCode = http.StatusInternalServerError
+	} else if errors.Is(err, scill_errors.RecordNotFound) {
+		statusCode = http.StatusNotFound
+	}
+
+	s.formatError(errName, err.Error(), statusCode)
+	ctx.AbortWithStatusJSON(statusCode, s)
 }
