@@ -2,6 +2,22 @@ package go_rnd_common
 
 import "time"
 
+// GetString returns the value associated with the key as a string.
+func GetString(key interface{}) (s string) {
+	if key != nil {
+		s, _ = key.(string)
+	}
+	return
+}
+
+// GetBool returns the value associated with the key as a boolean.
+func GetBool(key interface{}) (b bool) {
+	if key != nil {
+		b, _ = key.(bool)
+	}
+	return
+}
+
 func GetInt(key interface{}) (i int) {
 	if key != nil {
 		i, _ = key.(int)
