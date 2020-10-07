@@ -248,10 +248,11 @@ func (r *RND) ThrowStatusOK(i interface{}, c *gin.Context) {
 }
 
 type SCILLServiceResponse struct {
-	StatusCode int    `json:"status_code"`
-	Message    string `json:"message,omitempty"`
-	Error      string `json:"error,omitempty"`
-	ErrorSlug  string `json:"error_slug,omitempty"`
+	StatusCode int         `json:"status_code"`
+	Message    string      `json:"message,omitempty"`
+	Error      string      `json:"error,omitempty"`
+	ErrorSlug  string      `json:"error_slug,omitempty"`
+	Data       interface{} `json:"data,omitempty"`
 }
 
 func (s *SCILLServiceResponse) formatOK(message string) {
