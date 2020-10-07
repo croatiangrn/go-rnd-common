@@ -134,7 +134,7 @@ func (r *RND) getGenericErr(languageID int) string {
 	return errorName
 }
 
-func (r *RND) getErrorName(err error, languageID int) (string, error) {
+func (r *RND) GetErrorName(err error, languageID int) (string, error) {
 	errorName := ""
 	query := `SELECT error_message FROM error_messages WHERE error_key = ? AND language_id = ?`
 
@@ -149,7 +149,7 @@ func (r *RND) getErrorName(err error, languageID int) (string, error) {
 	return errorName, nil
 }
 
-func (r *RND) getErrorfName(err error, languageID int, values ...interface{}) (string, error) {
+func (r *RND) GetErrorfName(err error, languageID int, values ...interface{}) (string, error) {
 	errorName := ""
 	query := `SELECT error_message FROM error_messages WHERE error_key = ? AND language_id = ?`
 
@@ -165,7 +165,7 @@ func (r *RND) getErrorfName(err error, languageID int, values ...interface{}) (s
 }
 
 func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
-	errName, gotError := r.getErrorName(err, languageID)
+	errName, gotError := r.GetErrorName(err, languageID)
 	statusCode := http.StatusBadRequest
 
 	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
@@ -187,7 +187,7 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 }
 
 func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, values ...interface{}) {
-	errName, gotError := r.getErrorfName(err, languageID, values...)
+	errName, gotError := r.GetErrorfName(err, languageID, values...)
 	statusCode := http.StatusBadRequest
 
 	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
@@ -208,7 +208,7 @@ func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, va
 }
 
 func (r *RND) ThrowStatusUnauthorized(err error, languageID int, c *gin.Context) {
-	errName, gotError := r.getErrorName(err, languageID)
+	errName, gotError := r.GetErrorName(err, languageID)
 	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
 		errName = r.getGenericErr(languageID)
 		err = scill_errors.GenericErr
