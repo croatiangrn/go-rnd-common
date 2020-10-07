@@ -3,7 +3,7 @@ module github.com/croatiangrn/go-rnd-common
 go 1.14
 
 require (
-	github.com/croatiangrn/scill_errors v0.0.0-20200910150013-a28bacf11490
+	github.com/croatiangrn/scill_errors v0.0.0-20201007092016-7b749a6024b2
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect

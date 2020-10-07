@@ -6,6 +6,8 @@ github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/croatiangrn/scill_errors v0.0.0-20200910150013-a28bacf11490 h1:UHUgDe6bDfZKSHB5x3IF694MQK1mRwUXd3s4e6j/68E=
 github.com/croatiangrn/scill_errors v0.0.0-20200910150013-a28bacf11490/go.mod h1:UDBwBGpfbucDNCaAsqVzJfMiw3/PjOCnFegULkaqI8U=
+github.com/croatiangrn/scill_errors v0.0.0-20201007092016-7b749a6024b2 h1:w9fG5/dOQrptun9BUSxMuAc7w16YQZyl2KbvNUc5RYo=
+github.com/croatiangrn/scill_errors v0.0.0-20201007092016-7b749a6024b2/go.mod h1:UDBwBGpfbucDNCaAsqVzJfMiw3/PjOCnFegULkaqI8U=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

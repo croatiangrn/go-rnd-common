@@ -298,6 +298,8 @@ func (s *SCILLServiceResponse) HttpErrorfWithSlug(r *RND, err error, languageID 
 		statusCode = http.StatusInternalServerError
 	} else if errors.Is(err, scill_errors.RecordNotFound) {
 		statusCode = http.StatusNotFound
+	} else if errors.Is(err, scill_errors.Unauthorized) {
+		statusCode = http.StatusUnauthorized
 	}
 
 	s.formatError(errName, err.Error(), statusCode)
