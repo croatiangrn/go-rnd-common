@@ -270,8 +270,7 @@ func (s *SCILLServiceResponse) ThrowStatusOK(message string, c *gin.Context) {
 	c.JSON(s.StatusCode, s)
 }
 
-func (s *SCILLServiceResponse) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
-	r := RND{}
+func (s *SCILLServiceResponse) HttpErrorWithSlug(r *RND, err error, languageID int, ctx *gin.Context) {
 	errName, gotError := r.GetErrorName(err, languageID)
 	statusCode := http.StatusBadRequest
 
@@ -289,8 +288,7 @@ func (s *SCILLServiceResponse) HttpErrorWithSlug(err error, languageID int, ctx 
 	ctx.AbortWithStatusJSON(statusCode, s)
 }
 
-func (s *SCILLServiceResponse) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, values ...interface{}) {
-	r := RND{}
+func (s *SCILLServiceResponse) HttpErrorfWithSlug(r *RND, err error, languageID int, ctx *gin.Context, values ...interface{}) {
 	errName, gotError := r.GetErrorfName(err, languageID, values...)
 	statusCode := http.StatusBadRequest
 
