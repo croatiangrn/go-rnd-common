@@ -176,6 +176,8 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 		statusCode = http.StatusNotFound
 	} else if errors.Is(err, scill_errors.GenericErr) {
 		statusCode = http.StatusInternalServerError
+	} else if errors.Is(err, scill_errors.Unauthorized) {
+		statusCode = http.StatusUnauthorized
 	}
 
 	e := HttpErrorWithErrorSlug{
@@ -196,6 +198,8 @@ func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, va
 		statusCode = http.StatusInternalServerError
 	} else if errors.Is(err, scill_errors.RecordNotFound) {
 		statusCode = http.StatusNotFound
+	} else if errors.Is(err, scill_errors.Unauthorized) {
+		statusCode = http.StatusUnauthorized
 	}
 
 	e := HttpErrorWithErrorSlug{
