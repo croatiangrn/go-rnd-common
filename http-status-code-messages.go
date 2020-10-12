@@ -276,6 +276,7 @@ func (s *SCILLServiceResponse) ThrowErrorStatus(c *gin.Context) {
 	c.JSON(s.StatusCode, s)
 }
 
+
 func (s *SCILLServiceResponse) HttpErrorWithSlug(r *RND, err error, languageID int, ctx *gin.Context) {
 	errName, gotError := r.GetErrorName(err, languageID)
 	statusCode := http.StatusBadRequest
