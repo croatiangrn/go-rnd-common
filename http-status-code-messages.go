@@ -275,11 +275,30 @@ func (s *SCILLServiceResponse) ThrowStatusOK(message string, c *gin.Context) {
 	c.JSON(s.StatusCode, s)
 }
 
+type scillServiceResponseStatusOK struct {
+	StatusCode int    `json:"status"`
+	Message    string `json:"message,omitempty"`
+}
+
+func (s *SCILLServiceResponse) ThrowStatusOrStatusMessageOK(message string, showStatusMessage bool, c *gin.Context) {
+	s.formatOK(message)
+
+	if showStatusMessage {
+		res := scillServiceResponseStatusOK{
+			StatusCode: s.StatusCode,
+			Message:    s.Message,
+		}
+
+		c.JSON(s.StatusCode, res)
+	} else {
+		c.JSON(s.StatusCode, s)
+	}
+}
+
 func (s *SCILLServiceResponse) ThrowErrorStatus(c *gin.Context) {
 	s.formatError(s.Error, s.ErrorSlug, s.StatusCode)
 	c.JSON(s.StatusCode, s)
 }
-
 
 func (s *SCILLServiceResponse) HttpErrorWithSlug(r *RND, err error, languageID int, ctx *gin.Context) {
 	errName, gotError := r.GetErrorName(err, languageID)
