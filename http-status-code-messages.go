@@ -289,7 +289,7 @@ func (s *SCILLServiceResponse) ThrowStatusOrStatusMessageOK(message string, show
 			Message: s.Message,
 		}
 
-		c.JSON(s.StatusCode, res)
+		c.JSON(res.Status, res)
 	} else {
 		c.JSON(s.StatusCode, s)
 	}
