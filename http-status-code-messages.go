@@ -276,8 +276,8 @@ func (s *SCILLServiceResponse) ThrowStatusOK(message string, c *gin.Context) {
 }
 
 type scillServiceResponseStatusOK struct {
-	StatusCode int    `json:"status"`
-	Message    string `json:"message,omitempty"`
+	Status  int    `json:"status"`
+	Message string `json:"message,omitempty"`
 }
 
 func (s *SCILLServiceResponse) ThrowStatusOrStatusMessageOK(message string, showStatusMessage bool, c *gin.Context) {
@@ -285,8 +285,8 @@ func (s *SCILLServiceResponse) ThrowStatusOrStatusMessageOK(message string, show
 
 	if showStatusMessage {
 		res := scillServiceResponseStatusOK{
-			StatusCode: s.StatusCode,
-			Message:    s.Message,
+			Status:  s.StatusCode,
+			Message: s.Message,
 		}
 
 		c.JSON(s.StatusCode, res)
