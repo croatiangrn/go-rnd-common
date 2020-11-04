@@ -188,6 +188,23 @@ func (r *RND) HttpErrorWithSlug(err error, languageID int, ctx *gin.Context) {
 	ctx.AbortWithStatusJSON(statusCode, e)
 }
 
+func (r *RND) HttpErrorWithSlugAndStatusCode(err error, languageID int, statusCode int, ctx *gin.Context) {
+	errName, gotError := r.GetErrorName(err, languageID)
+
+	if gotError != nil && errors.Is(gotError, scill_errors.GenericErr) {
+		errName = r.getGenericErr(languageID)
+		err = scill_errors.GenericErr
+	}
+
+	e := HttpErrorWithErrorSlug{
+		Error:      errName,
+		ErrorSlug:  err.Error(),
+		StatusCode: statusCode,
+	}
+
+	ctx.AbortWithStatusJSON(statusCode, e)
+}
+
 func (r *RND) HttpErrorfWithSlug(err error, languageID int, ctx *gin.Context, values ...interface{}) {
 	errName, gotError := r.GetErrorfName(err, languageID, values...)
 	statusCode := http.StatusBadRequest
